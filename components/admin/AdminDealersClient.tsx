@@ -2,31 +2,37 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { PageHeader } from "@/components/shared/PageHeader";
-import { StatusBadge, getDealerStatus } from "@/components/shared/StatusBadge";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { formatDate } from "@/lib/utils";
 import {
   Plus, Search, Edit, Trash2, RefreshCw, Users,
-  ChevronLeft, ChevronRight, CheckCircle2, XCircle, Clock
+  ChevronLeft, ChevronRight, CheckCircle2, XCircle,
+  UserCheck, UserX, Clock
 } from "lucide-react";
 
 interface Dealer {
-  id: string;
-  name: string;
-  email: string;
-  company: string | null;
-  phone: string | null;
-  isActive: boolean;
-  isApproved: boolean;
-  createdAt: string;
+  id: string; name: string; email: string;
+  company: string | null; phone: string | null;
+  isActive: boolean; isApproved: boolean; createdAt: string;
 }
+interface Pagination { total: number; page: number; limit: number; totalPages: number; }
 
-interface Pagination {
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
+function DealerStatusBadge({ isActive, isApproved }: { isActive: boolean; isApproved: boolean }) {
+  if (!isApproved) return (
+    <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full">
+      <Clock className="w-3 h-3" /> Pending
+    </span>
+  );
+  if (isApproved && isActive) return (
+    <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full">
+      <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" /> Active
+    </span>
+  );
+  return (
+    <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-red-700 bg-red-50 border border-red-200 px-2.5 py-1 rounded-full">
+      <span className="w-1.5 h-1.5 bg-red-500 rounded-full" /> Inactive
+    </span>
+  );
 }
 
 export function AdminDealersClient() {
@@ -42,8 +48,7 @@ export function AdminDealersClient() {
     setIsLoading(true);
     try {
       const params = new URLSearchParams({
-        page: String(page),
-        limit: "10",
+        page: String(page), limit: "10",
         ...(search && { search }),
         ...(statusFilter !== "all" && { status: statusFilter }),
       });
@@ -51,14 +56,12 @@ export function AdminDealersClient() {
       const data = await res.json();
       setDealers(data.dealers);
       setPagination(data.pagination);
-    } finally {
-      setIsLoading(false);
-    }
+    } finally { setIsLoading(false); }
   }, [search, statusFilter]);
 
   useEffect(() => {
-    const timer = setTimeout(() => fetchDealers(1), 300);
-    return () => clearTimeout(timer);
+    const t = setTimeout(() => fetchDealers(1), 300);
+    return () => clearTimeout(t);
   }, [fetchDealers]);
 
   const handleDelete = async () => {
@@ -68,176 +71,191 @@ export function AdminDealersClient() {
     fetchDealers(pagination.page);
   };
 
-  const toggleApproval = async (dealer: Dealer) => {
-    setTogglingId(dealer.id);
-    await fetch(`/api/dealers/${dealer.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ isApproved: !dealer.isApproved }),
+  const patchDealer = async (id: string, body: object) => {
+    setTogglingId(id);
+    await fetch(`/api/dealers/${id}`, {
+      method: "PATCH", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
     });
     setTogglingId(null);
     fetchDealers(pagination.page);
   };
 
-  const toggleActive = async (dealer: Dealer) => {
-    setTogglingId(dealer.id);
-    await fetch(`/api/dealers/${dealer.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ isActive: !dealer.isActive }),
-    });
-    setTogglingId(null);
-    fetchDealers(pagination.page);
-  };
+  const pending  = dealers.filter(d => !d.isApproved).length;
+  const active   = dealers.filter(d => d.isApproved && d.isActive).length;
 
   return (
     <div className="space-y-5 animate-fade-in">
-      <PageHeader
-        title="Dealer Management"
-        description="Manage dealer accounts, approvals, and access"
-        breadcrumb={[{ label: "Admin" }, { label: "Dealers" }]}
-        action={{ label: "Add Dealer", href: "/admin/dealers/new", icon: Plus, id: "add-dealer-btn" }}
-      />
 
-      {/* Filters */}
-      <div className="card-premium p-4">
-        <div className="flex flex-col sm:flex-row gap-3">
+      {/* ── Header ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <nav className="flex items-center gap-1.5 text-xs text-slate-400 mb-1">
+            <span>Admin</span><span>/</span>
+            <span className="text-slate-600 font-medium">Dealers</span>
+          </nav>
+          <h1 className="text-2xl font-bold text-slate-900">Dealer Management</h1>
+          <p className="text-sm text-slate-500 mt-0.5">Manage dealer accounts, approvals, and access</p>
+        </div>
+        <Link href="/admin/dealers/new" id="add-dealer-btn"
+          className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors shadow-sm self-start sm:self-auto">
+          <Plus className="w-4 h-4" /> Add Dealer
+        </Link>
+      </div>
+
+      {/* ── Filters ── */}
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+        <div className="flex flex-col sm:flex-row gap-2.5">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input
-              id="dealer-search"
-              type="text"
-              placeholder="Search by name, email, company..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="form-input pl-9"
-            />
+            <input id="dealer-search" type="text" placeholder="Search by name, email or company…"
+              value={search} onChange={e => setSearch(e.target.value)}
+              className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-lg outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all bg-slate-50 placeholder:text-slate-400" />
           </div>
-          <select
-            id="dealer-status-filter"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="form-input w-full sm:w-44"
-          >
+          <select id="dealer-status-filter" value={statusFilter}
+            onChange={e => setStatusFilter(e.target.value)}
+            className="py-2 px-3 text-sm border border-slate-200 rounded-lg outline-none focus:border-blue-500 bg-slate-50 text-slate-700 cursor-pointer sm:w-44">
             <option value="all">All Dealers</option>
             <option value="pending">Pending Approval</option>
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
-          <button
-            id="dealer-refresh"
-            onClick={() => fetchDealers(pagination.page)}
-            className="p-2.5 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors"
-          >
+          <button id="dealer-refresh" onClick={() => fetchDealers(pagination.page)}
+            className="p-2.5 border border-slate-200 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-colors">
             <RefreshCw className="w-4 h-4" />
           </button>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="card-premium overflow-hidden">
+      {/* ── Table card ── */}
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
         {isLoading ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="flex flex-col items-center gap-3">
-              <div className="w-8 h-8 border-2 border-ev-blue border-t-transparent rounded-full animate-spin" />
-              <p className="text-sm text-slate-400">Loading dealers...</p>
-            </div>
+          <div className="flex flex-col items-center justify-center py-20 gap-3">
+            <div className="w-8 h-8 border-[3px] border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+            <p className="text-sm text-slate-400">Loading dealers…</p>
           </div>
         ) : dealers.length === 0 ? (
-          <div className="text-center py-16">
-            <Users className="w-12 h-12 text-slate-200 mx-auto mb-3" />
-            <p className="text-slate-500 font-medium">No dealers found</p>
-            <p className="text-sm text-slate-400 mt-1">
-              {search ? "Try a different search" : "No dealers have registered yet"}
+          <div className="flex flex-col items-center justify-center py-20 text-center px-4">
+            <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mb-4">
+              <Users className="w-8 h-8 text-slate-300" />
+            </div>
+            <p className="text-slate-700 font-semibold mb-1">No dealers found</p>
+            <p className="text-sm text-slate-400 mb-5">
+              {search ? `No results for "${search}"` : "No dealers have registered yet"}
             </p>
+            <Link href="/admin/dealers/new"
+              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+              <Plus className="w-4 h-4" /> Add Dealer
+            </Link>
           </div>
         ) : (
           <>
+            {/* Summary bar */}
+            <div className="flex items-center justify-between px-5 py-3 bg-slate-50 border-b border-slate-200">
+              <p className="text-xs text-slate-500 font-medium">
+                {pagination.total} dealer{pagination.total !== 1 ? "s" : ""} total
+              </p>
+              <div className="flex items-center gap-3 text-xs text-slate-400">
+                {pending > 0 && (
+                  <span className="flex items-center gap-1 text-amber-600 font-semibold">
+                    <Clock className="w-3 h-3" /> {pending} pending
+                  </span>
+                )}
+                <span className="flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3 text-emerald-500" /> {active} active
+                </span>
+              </div>
+            </div>
+
             <div className="overflow-x-auto">
-              <table className="data-table">
+              <table className="w-full text-sm">
                 <thead>
-                  <tr>
-                    <th>Dealer</th>
-                    <th>Company</th>
-                    <th>Phone</th>
-                    <th>Status</th>
-                    <th>Joined</th>
-                    <th>Actions</th>
+                  <tr className="border-b border-slate-200 bg-slate-50/70">
+                    <th className="text-left px-5 py-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Dealer</th>
+                    <th className="text-left px-4 py-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Company</th>
+                    <th className="text-left px-4 py-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Phone</th>
+                    <th className="text-left px-4 py-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                    <th className="text-left px-4 py-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Joined</th>
+                    <th className="text-right px-5 py-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {dealers.map((dealer) => (
-                    <tr key={dealer.id}>
-                      <td>
+                <tbody className="divide-y divide-slate-100">
+                  {dealers.map(dealer => (
+                    <tr key={dealer.id} className="hover:bg-blue-50/40 transition-colors group">
+
+                      {/* Dealer info */}
+                      <td className="px-5 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-sm flex-shrink-0">
+                          <div className="w-10 h-10 rounded-full bg-violet-100 flex items-center justify-center text-violet-700 font-bold text-sm flex-shrink-0 ring-2 ring-violet-100">
                             {dealer.name.slice(0, 2).toUpperCase()}
                           </div>
                           <div>
-                            <p className="font-semibold text-slate-800">{dealer.name}</p>
-                            <p className="text-xs text-slate-400">{dealer.email}</p>
+                            <p className="font-semibold text-slate-800 group-hover:text-blue-700 transition-colors text-sm">{dealer.name}</p>
+                            <p className="text-xs text-slate-400 mt-0.5">{dealer.email}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="text-slate-600">{dealer.company || "—"}</td>
-                      <td className="text-slate-600">{dealer.phone || "—"}</td>
-                      <td>
-                        <StatusBadge status={getDealerStatus(dealer.isActive, dealer.isApproved)} />
+
+                      {/* Company */}
+                      <td className="px-4 py-4">
+                        <span className="text-sm text-slate-700 font-medium">{dealer.company || <span className="text-slate-300">—</span>}</span>
                       </td>
-                      <td className="text-slate-500">{formatDate(dealer.createdAt)}</td>
-                      <td>
-                        <div className="flex items-center gap-1.5">
-                          {/* Approve/Reject */}
+
+                      {/* Phone */}
+                      <td className="px-4 py-4">
+                        <span className="text-sm text-slate-600">{dealer.phone || <span className="text-slate-300">—</span>}</span>
+                      </td>
+
+                      {/* Status */}
+                      <td className="px-4 py-4">
+                        <DealerStatusBadge isActive={dealer.isActive} isApproved={dealer.isApproved} />
+                      </td>
+
+                      {/* Joined */}
+                      <td className="px-4 py-4 text-sm text-slate-500">{formatDate(dealer.createdAt)}</td>
+
+                      {/* Actions */}
+                      <td className="px-5 py-4">
+                        <div className="flex items-center justify-end gap-1">
+                          {/* Approve / Revoke */}
                           {!dealer.isApproved ? (
-                            <button
-                              id={`approve-dealer-${dealer.id}`}
-                              onClick={() => toggleApproval(dealer)}
+                            <button id={`approve-dealer-${dealer.id}`}
+                              onClick={() => patchDealer(dealer.id, { isApproved: true })}
                               disabled={togglingId === dealer.id}
-                              className="p-1.5 rounded-lg text-emerald-600 hover:bg-emerald-50 transition-colors disabled:opacity-40"
-                              title="Approve"
-                            >
-                              <CheckCircle2 className="w-4 h-4" />
+                              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors disabled:opacity-50"
+                              title="Approve dealer">
+                              <UserCheck className="w-3.5 h-3.5" /> Approve
                             </button>
                           ) : (
-                            <button
-                              id={`revoke-dealer-${dealer.id}`}
-                              onClick={() => toggleApproval(dealer)}
+                            <button id={`revoke-dealer-${dealer.id}`}
+                              onClick={() => patchDealer(dealer.id, { isApproved: false })}
                               disabled={togglingId === dealer.id}
-                              className="p-1.5 rounded-lg text-amber-500 hover:bg-amber-50 transition-colors disabled:opacity-40"
-                              title="Revoke Approval"
-                            >
-                              <Clock className="w-4 h-4" />
+                              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 transition-colors disabled:opacity-50"
+                              title="Revoke approval">
+                              <Clock className="w-3.5 h-3.5" /> Revoke
                             </button>
                           )}
 
-                          {/* Activate/Deactivate */}
-                          <button
-                            id={`toggle-active-${dealer.id}`}
-                            onClick={() => toggleActive(dealer)}
+                          {/* Activate / Deactivate */}
+                          <button id={`toggle-active-${dealer.id}`}
+                            onClick={() => patchDealer(dealer.id, { isActive: !dealer.isActive })}
                             disabled={togglingId === dealer.id}
-                            className={`p-1.5 rounded-lg transition-colors disabled:opacity-40 ${dealer.isActive ? "text-red-500 hover:bg-red-50" : "text-emerald-600 hover:bg-emerald-50"}`}
                             title={dealer.isActive ? "Deactivate" : "Activate"}
-                          >
-                            {dealer.isActive ? <XCircle className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
+                            className={`p-2 rounded-lg transition-colors disabled:opacity-50 ${dealer.isActive
+                              ? "text-red-500 hover:bg-red-50"
+                              : "text-emerald-600 hover:bg-emerald-50"}`}>
+                            {dealer.isActive ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
                           </button>
 
                           {/* Edit */}
-                          <Link
-                            href={`/admin/dealers/${dealer.id}/edit`}
-                            id={`edit-dealer-${dealer.id}`}
-                            className="p-1.5 rounded-lg text-slate-500 hover:bg-ev-blue/10 hover:text-ev-blue transition-colors"
-                            title="Edit"
-                          >
+                          <Link href={`/admin/dealers/${dealer.id}/edit`} id={`edit-dealer-${dealer.id}`}
+                            className="p-2 rounded-lg text-slate-400 hover:bg-blue-100 hover:text-blue-600 transition-colors" title="Edit">
                             <Edit className="w-4 h-4" />
                           </Link>
 
                           {/* Delete */}
-                          <button
-                            id={`delete-dealer-${dealer.id}`}
-                            onClick={() => setDeleteId(dealer.id)}
-                            className="p-1.5 rounded-lg text-slate-500 hover:bg-red-50 hover:text-red-500 transition-colors"
-                            title="Delete"
-                          >
+                          <button id={`delete-dealer-${dealer.id}`} onClick={() => setDeleteId(dealer.id)}
+                            className="p-2 rounded-lg text-slate-400 hover:bg-red-100 hover:text-red-600 transition-colors" title="Delete">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
@@ -250,17 +268,29 @@ export function AdminDealersClient() {
 
             {/* Pagination */}
             {pagination.totalPages > 1 && (
-              <div className="flex items-center justify-between px-5 py-3.5 border-t border-slate-100">
+              <div className="flex items-center justify-between px-5 py-3.5 border-t border-slate-100 bg-slate-50/50">
                 <p className="text-xs text-slate-500">
                   Showing {(pagination.page - 1) * pagination.limit + 1}–
-                  {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total}
+                  {Math.min(pagination.page * pagination.limit, pagination.total)} of{" "}
+                  <span className="font-semibold text-slate-700">{pagination.total}</span>
                 </p>
                 <div className="flex items-center gap-1">
-                  <button id="dealers-prev-page" onClick={() => fetchDealers(pagination.page - 1)} disabled={pagination.page === 1} className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 disabled:opacity-40">
+                  <button id="dealers-prev-page" onClick={() => fetchDealers(pagination.page - 1)}
+                    disabled={pagination.page === 1}
+                    className="p-1.5 rounded-lg text-slate-600 hover:bg-white hover:shadow-sm border border-transparent hover:border-slate-200 disabled:opacity-40 transition-all">
                     <ChevronLeft className="w-4 h-4" />
                   </button>
-                  <span className="text-sm text-slate-600 px-2">{pagination.page} / {pagination.totalPages}</span>
-                  <button id="dealers-next-page" onClick={() => fetchDealers(pagination.page + 1)} disabled={pagination.page === pagination.totalPages} className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 disabled:opacity-40">
+                  {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map(p => (
+                    <button key={p} onClick={() => fetchDealers(p)}
+                      className={`w-7 h-7 text-xs font-semibold rounded-lg transition-all ${p === pagination.page
+                        ? "bg-blue-600 text-white shadow-sm"
+                        : "text-slate-600 hover:bg-white hover:shadow-sm border border-transparent hover:border-slate-200"}`}>
+                      {p}
+                    </button>
+                  ))}
+                  <button id="dealers-next-page" onClick={() => fetchDealers(pagination.page + 1)}
+                    disabled={pagination.page === pagination.totalPages}
+                    className="p-1.5 rounded-lg text-slate-600 hover:bg-white hover:shadow-sm border border-transparent hover:border-slate-200 disabled:opacity-40 transition-all">
                     <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
@@ -275,7 +305,7 @@ export function AdminDealersClient() {
         onClose={() => setDeleteId(null)}
         onConfirm={handleDelete}
         title="Delete Dealer Account"
-        description="Are you sure you want to permanently delete this dealer account? This action cannot be undone."
+        description="This will permanently delete the dealer account. This action cannot be undone."
         confirmLabel="Delete Dealer"
         variant="danger"
       />

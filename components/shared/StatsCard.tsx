@@ -18,7 +18,7 @@ export function StatsCard({
   title,
   value,
   icon: Icon,
-  iconBg = "bg-brand-light",
+  iconBg = "bg-blue-50",
   trend,
   description,
   className,
@@ -36,7 +36,7 @@ export function StatsCard({
           iconBg
         )}
       >
-        <Icon className="w-6 h-6 text-brand" />
+        <Icon className="w-6 h-6 text-blue-600" />
       </div>
 
       {/* Content */}
@@ -79,3 +79,4 @@ export function StatsCard({
     </div>
   );
 }
+

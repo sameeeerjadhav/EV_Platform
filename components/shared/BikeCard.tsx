@@ -58,7 +58,7 @@ export function BikeCard({
       {/* Content */}
       <div className="p-4 flex flex-col flex-1">
         <div className="mb-3">
-          <h3 className="font-bold text-slate-900 text-sm leading-tight group-hover:text-brand transition-colors">
+          <h3 className="font-bold text-slate-900 text-sm leading-tight group-hover:text-blue-700 transition-colors">
             {name}
           </h3>
           <p className="text-slate-400 text-xs mt-0.5">{model}</p>
@@ -68,7 +68,7 @@ export function BikeCard({
         <div className="grid grid-cols-3 gap-1.5 mb-4">
           {[
             { Icon: Battery, value: batteryCapacity, color: "text-emerald-600" },
-            { Icon: Zap,     value: range,           color: "text-brand" },
+            { Icon: Zap,     value: range,           color: "text-blue-600" },
             { Icon: Gauge,   value: topSpeed,        color: "text-cyan-600" },
           ].map(({ Icon, value, color }) => (
             <div key={value} className="flex flex-col items-center gap-1 p-2 bg-slate-50 rounded-lg">
@@ -90,7 +90,7 @@ export function BikeCard({
           <Link
             href={`${viewPrefix}/${id}`}
             id={`bike-card-view-${id}`}
-            className="flex items-center gap-1 text-sm font-semibold text-brand hover:gap-2 transition-all duration-200"
+            className="flex items-center gap-1 text-sm font-semibold text-blue-600 hover:gap-2 transition-all duration-200"
           >
             View <ArrowRight className="w-4 h-4" />
           </Link>
@@ -99,3 +99,4 @@ export function BikeCard({
     </div>
   );
 }
+

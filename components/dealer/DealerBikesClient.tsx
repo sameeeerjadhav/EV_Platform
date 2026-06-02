@@ -98,11 +98,11 @@ export function DealerBikesClient() {
           <button
             id="dealer-bike-filter-toggle"
             onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg border text-sm font-medium transition-colors ${showFilters ? "border-ev-blue bg-ev-blue/5 text-ev-blue" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg border text-sm font-medium transition-colors ${showFilters ? "border-blue-600 bg-blue-50 text-blue-600" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}
           >
             <Filter className="w-4 h-4" />
             Filters
-            {hasFilters && <span className="w-2 h-2 rounded-full bg-ev-blue" />}
+            {hasFilters && <span className="w-2 h-2 rounded-full bg-blue-600" />}
           </button>
         </div>
 
@@ -173,7 +173,7 @@ export function DealerBikesClient() {
             {search ? "Try a different search term" : "No bikes are currently available"}
           </p>
           {hasFilters && (
-            <button onClick={clearFilters} className="mt-4 text-sm text-ev-blue hover:underline">
+            <button onClick={clearFilters} className="mt-4 text-sm text-blue-600 hover:underline">
               Clear all filters
             </button>
           )}
@@ -226,3 +226,4 @@ export function DealerBikesClient() {
     </div>
   );
 }
+

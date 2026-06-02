@@ -6,3 +6,4 @@ export const metadata: Metadata = { title: "Bike Management" };
 export default function AdminBikesPage() {
   return <AdminBikesClient />;
 }
+

@@ -71,7 +71,7 @@ export function ConfirmDialog({
                 ? "bg-red-50"
                 : variant === "warning"
                 ? "bg-amber-50"
-                : "bg-ev-blue/10"
+                : "bg-blue-100"
             }`}
           >
             <AlertTriangle
@@ -80,7 +80,7 @@ export function ConfirmDialog({
                   ? "text-red-500"
                   : variant === "warning"
                   ? "text-amber-500"
-                  : "text-ev-blue"
+                  : "text-blue-600"
               }`}
             />
           </div>
@@ -114,3 +114,4 @@ export function ConfirmDialog({
     </div>
   );
 }
+

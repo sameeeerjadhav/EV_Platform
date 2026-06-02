@@ -87,3 +87,4 @@ export function getDealerStatus(
   if (!isApproved) return "pending";
   return "active";
 }
+

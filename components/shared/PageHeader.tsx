@@ -33,7 +33,7 @@ export function PageHeader({
                 {item.href ? (
                   <a
                     href={item.href}
-                    className="hover:text-ev-blue transition-colors"
+                    className="hover:text-blue-600 transition-colors"
                   >
                     {item.label}
                   </a>
@@ -76,3 +76,4 @@ export function PageHeader({
     </div>
   );
 }
+

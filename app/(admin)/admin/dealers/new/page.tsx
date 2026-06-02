@@ -6,3 +6,4 @@ export const metadata: Metadata = { title: "Add Dealer" };
 export default function NewDealerPage() {
   return <DealerForm />;
 }
+

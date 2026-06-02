@@ -208,7 +208,7 @@ export function BikeForm({ bike }: BikeFormProps) {
             <input
               id="bike-available"
               type="checkbox"
-              className="w-4 h-4 rounded text-ev-blue focus:ring-ev-blue"
+              className="w-4 h-4 rounded accent-blue-600"
               {...register("isAvailable")}
             />
             <span className="text-sm text-slate-700">
@@ -243,3 +243,4 @@ export function BikeForm({ bike }: BikeFormProps) {
     </div>
   );
 }
+

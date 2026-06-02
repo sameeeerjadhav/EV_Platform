@@ -91,8 +91,8 @@ export function ImageUpload({
           className={cn(
             "border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200",
             dragOver
-              ? "border-ev-blue bg-ev-blue/5"
-              : "border-slate-200 hover:border-ev-blue/50 hover:bg-slate-50"
+              ? "border-blue-600 bg-blue-50"
+              : "border-slate-200 hover:border-blue-300 hover:bg-slate-50"
           )}
           onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
           onDragLeave={() => setDragOver(false)}
@@ -111,18 +111,18 @@ export function ImageUpload({
 
           {uploading ? (
             <div className="flex flex-col items-center gap-3">
-              <Loader2 className="w-8 h-8 text-ev-blue animate-spin" />
+              <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
               <p className="text-sm text-slate-500">Uploading to Cloudinary...</p>
             </div>
           ) : (
             <div className="flex flex-col items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-ev-blue/10 flex items-center justify-center">
-                <ImagePlus className="w-6 h-6 text-ev-blue" />
+              <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
+                <ImagePlus className="w-6 h-6 text-blue-600" />
               </div>
               <div>
                 <p className="text-sm font-medium text-slate-700">
                   Drop images here or{" "}
-                  <span className="text-ev-blue">click to browse</span>
+                  <span className="text-blue-600">click to browse</span>
                 </p>
                 <p className="text-xs text-slate-400 mt-1">
                   PNG, JPG, WebP up to 10MB each • Max {maxImages} images
@@ -174,7 +174,7 @@ export function ImageUpload({
 
               {/* Primary badge */}
               {image.isPrimary && (
-                <div className="absolute top-1.5 left-1.5 bg-ev-blue text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+                <div className="absolute top-1.5 left-1.5 bg-blue-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
                   <Star className="w-2.5 h-2.5" /> Main
                 </div>
               )}
@@ -191,3 +191,4 @@ export function ImageUpload({
     </div>
   );
 }
+

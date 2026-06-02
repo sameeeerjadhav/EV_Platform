@@ -59,3 +59,4 @@ export function Topbar({ userName, userRole }: TopbarProps) {
     </header>
   );
 }
+

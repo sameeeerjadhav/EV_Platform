@@ -170,14 +170,14 @@ export function DealerForm({ dealer }: DealerFormProps) {
           </h2>
           <div className="space-y-3">
             <label className="flex items-center gap-3 cursor-pointer">
-              <input id="dealer-approved" type="checkbox" className="w-4 h-4 rounded text-ev-blue" {...register("isApproved")} />
+              <input id="dealer-approved" type="checkbox" className="w-4 h-4 rounded text-blue-600" {...register("isApproved")} />
               <div>
                 <span className="text-sm font-medium text-slate-700">Approved</span>
                 <p className="text-xs text-slate-400">Allow this dealer to log in and view bikes</p>
               </div>
             </label>
             <label className="flex items-center gap-3 cursor-pointer">
-              <input id="dealer-active" type="checkbox" className="w-4 h-4 rounded text-ev-blue" {...register("isActive")} />
+              <input id="dealer-active" type="checkbox" className="w-4 h-4 rounded text-blue-600" {...register("isActive")} />
               <div>
                 <span className="text-sm font-medium text-slate-700">Active</span>
                 <p className="text-xs text-slate-400">Dealer account is enabled</p>
@@ -197,3 +197,4 @@ export function DealerForm({ dealer }: DealerFormProps) {
     </div>
   );
 }
+

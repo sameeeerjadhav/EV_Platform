@@ -6,3 +6,4 @@ export const metadata: Metadata = { title: "Add New Bike" };
 export default function NewBikePage() {
   return <BikeForm />;
 }
+

@@ -64,7 +64,7 @@ export default async function DealerDashboard() {
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-base md:text-lg font-bold text-slate-900">Latest EV Bikes</h2>
-          <Link href="/dealer/bikes" id="dealer-view-all-bikes" className="text-sm text-brand font-medium hover:underline flex items-center gap-1">
+          <Link href="/dealer/bikes" id="dealer-view-all-bikes" className="text-sm text-blue-600 font-medium hover:underline flex items-center gap-1">
             View all <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -99,3 +99,4 @@ export default async function DealerDashboard() {
     </div>
   );
 }
+

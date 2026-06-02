@@ -6,3 +6,4 @@ export const metadata: Metadata = { title: "Browse Bikes" };
 export default function DealerBikesPage() {
   return <DealerBikesClient />;
 }
+

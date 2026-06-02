@@ -43,9 +43,9 @@ export default async function BikeDetailPage({
   const otherImages = bike.images.filter((img) => img.id !== primaryImage?.id);
 
   const specs = [
-    { icon: Battery, label: "Battery Capacity", value: bike.batteryCapacity, color: "text-ev-green" },
-    { icon: Zap, label: "Range", value: bike.range, color: "text-ev-blue" },
-    { icon: Gauge, label: "Top Speed", value: bike.topSpeed, color: "text-ev-cyan" },
+    { icon: Battery, label: "Battery Capacity", value: bike.batteryCapacity, color: "text-emerald-600" },
+    { icon: Zap, label: "Range", value: bike.range, color: "text-blue-600" },
+    { icon: Gauge, label: "Top Speed", value: bike.topSpeed, color: "text-cyan-600" },
     { icon: Clock, label: "Charging Time", value: bike.chargingTime, color: "text-purple-500" },
   ];
 
@@ -155,7 +155,7 @@ export default async function BikeDetailPage({
             </div>
           </div>
 
-          <Link href="/dealer/bikes" id="bike-detail-back" className="flex items-center gap-2 text-sm text-slate-500 hover:text-ev-blue transition-colors">
+          <Link href="/dealer/bikes" id="bike-detail-back" className="flex items-center gap-2 text-sm text-slate-500 hover:text-blue-600 transition-colors">
             <ArrowLeft className="w-4 h-4" />
             Back to all bikes
           </Link>

@@ -6,3 +6,4 @@ export const metadata: Metadata = { title: "Dealer Management" };
 export default function AdminDealersPage() {
   return <AdminDealersClient />;
 }
+

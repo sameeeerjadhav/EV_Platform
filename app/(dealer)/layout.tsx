@@ -24,3 +24,4 @@ export default async function DealerLayout({ children }: { children: React.React
     </div>
   );
 }
+
