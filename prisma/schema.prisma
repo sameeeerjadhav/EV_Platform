@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  DEALER
+}
+
+model User {
+  id         String   @id @default(cuid())
+  name       String
+  email      String   @unique
+  password   String
+  role       Role     @default(DEALER)
+  isActive   Boolean  @default(true)
+  isApproved Boolean  @default(false)
+  phone      String?
+  company    String?
+  address    String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+model Bike {
+  id              String      @id @default(cuid())
+  name            String
+  brand           String
+  model           String
+  batteryCapacity String
+  range           String
+  topSpeed        String
+  chargingTime    String
+  price           Decimal     @db.Decimal(10, 2)
+  description     String      @db.Text
+  isAvailable     Boolean     @default(true)
+  images          BikeImage[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([brand])
+  @@index([isAvailable])
+  @@index([price])
+  @@map("bikes")
+}
+
+model BikeImage {
+  id        String   @id @default(cuid())
+  url       String   // Cloudinary secure URL
+  publicId  String   // Cloudinary public_id for deletion
+  isPrimary Boolean  @default(false)
+  bikeId    String
+  bike      Bike     @relation(fields: [bikeId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([bikeId])
+  @@map("bike_images")
+}
