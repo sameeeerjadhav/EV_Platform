@@ -28,7 +28,7 @@ export function LoginForm() {
       const session = await res.json();
       router.push(session?.user?.role === "ADMIN" ? "/admin/dashboard" : "/dealer/dashboard");
       router.refresh();
-    } catch { setError("Something went wrong. Please try again."); }
+    } catch (err) { setError(err instanceof Error ? err.message : "Something went wrong. Please try again."); }
     finally { setLoading(false); }
   };
 
