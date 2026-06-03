@@ -1,12 +1,12 @@
-"use client";
 import { Sidebar } from "@/components/shared/Sidebar";
-import { LayoutDashboard, Bike, Users, LogOut } from "lucide-react";
+import { LayoutDashboard, Bike, Users, LogOut, UserCircle } from "lucide-react";
 import { signOut } from "next-auth/react";
 
 const navItems = [
   { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
   { label: "Bikes",     href: "/admin/bikes",     icon: Bike },
-  { label: "Dealers",  href: "/admin/dealers",   icon: Users },
+  { label: "Dealers",   href: "/admin/dealers",   icon: Users },
+  { label: "Profile",   href: "/admin/profile",   icon: UserCircle },
 ];
 
 export function AdminSidebar() {
