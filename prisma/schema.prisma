@@ -6,7 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum Role {
@@ -28,42 +30,36 @@ model User {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  @@index([email])
-  @@index([role])
   @@map("users")
 }
 
 model Bike {
-  id              String      @id @default(cuid())
-  name            String
-  brand           String
-  model           String
-  batteryCapacity String
-  range           String
-  topSpeed        String
-  chargingTime    String
-  price           Decimal     @db.Decimal(10, 2)
-  description     String      @db.Text
-  isAvailable     Boolean     @default(true)
-  images          BikeImage[]
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  id               String     @id @default(cuid())
+  name             String
+  brand            String
+  model            String
+  price            Decimal    @db.Decimal(10, 2)
+  description      String     @db.Text
+  batteryCapacity  String
+  range            String
+  topSpeed         String
+  chargingTime     String
+  isAvailable      Boolean    @default(true)
+  images           BikeImage[]
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
 
-  @@index([brand])
-  @@index([isAvailable])
-  @@index([price])
   @@map("bikes")
 }
 
 model BikeImage {
   id        String   @id @default(cuid())
-  url       String   // Cloudinary secure URL
-  publicId  String   // Cloudinary public_id for deletion
+  url       String
+  publicId  String
   isPrimary Boolean  @default(false)
   bikeId    String
   bike      Bike     @relation(fields: [bikeId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 
-  @@index([bikeId])
   @@map("bike_images")
 }
