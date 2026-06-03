@@ -11,6 +11,9 @@ export async function GET() {
     AUTH_URL: process.env.AUTH_URL || "MISSING",
     ADMIN_SETUP_KEY: process.env.ADMIN_SETUP_KEY ? "SET" : "MISSING",
     NODE_ENV: process.env.NODE_ENV || "not set",
+    DATABASE_URL_PREVIEW: process.env.DATABASE_URL 
+      ? process.env.DATABASE_URL.substring(0, 40) + "..." + process.env.DATABASE_URL.substring(process.env.DATABASE_URL.length - 30)
+      : "MISSING",
   };
 
   // Test DB only if DATABASE_URL exists
