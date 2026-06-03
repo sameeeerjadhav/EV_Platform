@@ -39,8 +39,8 @@ export default async function BikeDetailPage({
 
   if (!bike) notFound();
 
-  const primaryImage = bike.images.find((img) => img.isPrimary) || bike.images[0];
-  const otherImages = bike.images.filter((img) => img.id !== primaryImage?.id);
+  const primaryImage = bike.images.find((img: { id: string; isPrimary: boolean; url: string }) => img.isPrimary) || bike.images[0];
+  const otherImages = bike.images.filter((img: { id: string; isPrimary: boolean; url: string }) => img.id !== primaryImage?.id);
 
   const specs = [
     { icon: Battery, label: "Battery Capacity", value: bike.batteryCapacity, color: "text-emerald-600" },
