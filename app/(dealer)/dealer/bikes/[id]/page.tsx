@@ -90,7 +90,7 @@ export default async function BikeDetailPage({
 
           {otherImages.length > 0 && (
             <div className="flex gap-3 overflow-x-auto pb-1">
-              {otherImages.map((img) => (
+              {otherImages.map((img: { id: string; url: string }) => (
                 <div key={img.id} className="relative flex-shrink-0 rounded-xl overflow-hidden border-2 border-slate-200" style={{ width: "5rem", height: "5rem" }}>
                   <Image src={img.url} alt="Bike image" fill className="object-cover" sizes="80px" />
                 </div>
