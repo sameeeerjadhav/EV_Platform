@@ -1,3 +1,4 @@
+"use client";
 import { Sidebar } from "@/components/shared/Sidebar";
 import { LayoutDashboard, Bike, Users, LogOut, UserCircle } from "lucide-react";
 import { signOut } from "next-auth/react";
